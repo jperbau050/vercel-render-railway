@@ -123,7 +123,7 @@ El objetivo es que cada vez que hagas un `git push` a la rama `main`, la aplicac
 
 ### A. Despliegue del Backend (Render)
 
-**Opción 1: Desde la Web (Recomendado para todos los planes)**
+**Configuración para Despliegue Automático con GitHub**
 
 1. Ve a [Render.com](https://render.com) e inicia sesión (o crea una cuenta con GitHub).
 2. Haz clic en **"New +"** > **"Web Service"**.
@@ -139,23 +139,29 @@ El objetivo es que cada vez que hagas un `git push` a la rama `main`, la aplicac
 5. Haz clic en **"Create Web Service"** y espera a que se despliegue.
 6. Una vez desplegado, tu backend estará disponible en una URL como: `https://vercel-render-backend-xxx.onrender.com`
 
-**¿Qué sucede automáticamente?**
-- Render detecta los cambios en tu repositorio automáticamente.
-- Cada `git push` a la rama `main` desencadena un nuevo despliegue (esto funciona en FREE).
-- Verás el progreso en el dashboard de Render.
+**Configurar Deploy Hook para despliegue automático:**
 
-**En caso de que NO se despliegue automáticamente:**
-- Si estás en plan Free y no se actualiza automáticamente, ve al dashboard.
-- Haz clic en **"Manual Deploy"** > **"Deploy latest commit"** para forzar un despliegue manual.
+7. En el dashboard de Render, ve a tu servicio > **Settings**.
+8. Busca la sección **"Deploy Hook"** y copia la URL completa.
+9. Ve a tu repositorio en GitHub > **Settings** > **Secrets and variables** > **Actions**.
+10. Crea un nuevo Secret:
+    - **Name:** `RENDER_DEPLOY_HOOK`
+    - **Value:** Pega la URL de Render copiada en el paso 8
+11. Haz clic en **"Add secret"**.
 
-**Nota sobre los Secrets:**
-- Los Deploy Hooks solo están disponibles en planes pagos.
-- En plan Free, el despliegue es automático cuando empujas a GitHub (no necesitas Secrets).
-- Si tienes variables de entorno sensibles, configúralas en **Settings** > **Environment Variables** en el dashboard de Render.
+**¿Qué sucede ahora?**
+- Cada vez que hagas `git push` a la rama `main`, GitHub dispara automáticamente el Deploy Hook de Render.
+- Render recibe la notificación y comienza un nuevo despliegue.
+- Tu backend se actualiza en internet en 1-2 minutos.
+
+**Verifica que funciona:**
+- En GitHub, ve a **Actions** después de hacer push.
+- Verás los workflows ejecutándose y llamando al Deploy Hook de Render.
+- En Render Dashboard, verás nuevos despliegues iniciándose automáticamente.
 
 ---
 
-### B. Despliegue del Frontend (Vercel) - Opción 1: Desde la Web (Recomendado)
+### B. Despliegue del Frontend (Vercel). Opción 1: Desde la Web (Recomendado)
 
 **Opción más rápida y visual:**
 
@@ -183,58 +189,7 @@ El objetivo es que cada vez que hagas un `git push` a la rama `main`, la aplicac
 
 ---
 
-### B. Despliegue del Frontend (Vercel) - Opción 2: Desde la CLI (Avanzado)
-
-Si prefieres usar la línea de comandos:
-
-1. Instala la CLI de Vercel localmente:
-   ```bash
-   npm install -g vercel
-   ```
-2. Inicia sesión:
-   ```bash
-   vercel login
-   ```
-3. Ve a la carpeta del frontend y despliegua:
-   ```bash
-   cd frontend
-   vercel --prod
-   ```
-4. Sigue los pasos interactivos y selecciona:
-   - **Project name:** `vercel-render-frontend`
-   - **Link to existing project?** No (primera vez)
-5. Después, configura las variables de entorno desde el dashboard de Vercel.
-
----
-
 ## 5. Conceptos Clave
-
-### Despliegue Automático
-
-Una vez conectado tu repositorio a Vercel y Render, el despliegue es **completamente automático**:
-
-```
-1. Haces: git push a main
-                 ↓
-2. GitHub recibe el push
-                 ↓
-3. Vercel y Render detectan el cambio
-                 ↓
-4. Automáticamente inician un nuevo despliegue
-                 ↓
-5. Tu aplicación se actualiza en internet (1-2 minutos)
-```
-
-**¿Cómo lo verifico?**
-- Ve al dashboard de **Vercel** o **Render**
-- Busca la sección **"Deployments"** o **"Deploy logs"**
-- Después de cada `git push`, verás un nuevo despliegue iniciándose automáticamente
-
-**¿Qué pasa si quiero forzar un despliegue?**
-- **Vercel:** Dashboard > Project > Deployments > "Redeploy"
-- **Render:** Dashboard > Service > Manual Deploy > "Deploy latest commit"
-
----
 
 ### Docker Multi-stage
 En los `Dockerfile`, utilizamos dos o más fases:
@@ -257,6 +212,7 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"])
 Nunca incluyas estas en el código, usa siempre archivos `.env` (no versionados).
 
 ### Secrets de GitHub
+
 Nunca subas contraseñas, tokens o claves al repositorio. Usa siempre:
 - GitHub Secrets (Settings > Secrets and variables)
 - Variables de entorno en plataformas de despliegue (Vercel, Render)
