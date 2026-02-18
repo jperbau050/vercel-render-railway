@@ -11,7 +11,7 @@ Utiliza:
 
 ---
 
-## Estructura del Proyecto
+## Estructura del proyecto
 
 El repositorio está organizado siguiendo el patrón de monorepositorio sencillo, donde cada servicio tiene su propia responsabilidad y configuración:
 
@@ -41,7 +41,7 @@ El repositorio está organizado siguiendo el patrón de monorepositorio sencillo
 
 ---
 
-## 1. Desarrollo Local con Docker
+## 1. Desarrollo local con Docker
 
 Para asegurar que todos los desarrolladores trabajen en el mismo entorno, utilizamos **Docker Compose**. Esto emula cómo funcionará la aplicación en producción.
 
@@ -126,9 +126,9 @@ El objetivo es que cada vez que hagas un `git push` a la rama `main`, la aplicac
 
 ### A. Despliegue del Backend (Render)
 
-**Configuración para Despliegue Automático con GitHub**
+**Configuración para el despliegue automático con GitHub**
 
-1. Ve a [Render.com](https://render.com) e inicia sesión (o crea una cuenta con GitHub).
+1. Ve a [Render.com](https://render.com) e inicia sesión, o crea una cuenta con GitHub.
 2. Haz clic en **"New +"** > **"Web Service"**.
 3. Conecta tu repositorio de GitHub:
    - Selecciona tu repositorio (`vercel-render`).
@@ -233,7 +233,7 @@ El backend está configurado para aceptar peticiones del frontend. Sin esto, el 
 app.add_middleware(CORSMiddleware, allow_origins=["*"])
 ```
 
-### Variables de Entorno
+### Variables de entorno
 
 - **Frontend:** `VITE_API_URL` indica dónde está el backend
 - **Backend:** `PORT` indica en qué puerto escuchar
@@ -248,7 +248,7 @@ Nunca subas contraseñas, tokens o claves al repositorio. Usa siempre:
 
 ---
 
-## 6. Tecnologías Utilizadas
+## 6. Tecnologías utilizadas
 
 | Componente | Tecnología | Versión |
 |-----------|-----------|---------|
@@ -262,7 +262,7 @@ Nunca subas contraseñas, tokens o claves al repositorio. Usa siempre:
 
 ---
 
-## 7. Comandos Útiles
+## 7. Comandos útiles durante el desarrollo
 
 ```bash
 # Desarrollo local
@@ -283,13 +283,12 @@ docker compose exec frontend npm install
 
 ---
 
-## 8. Próximos Pasos
+## 8. Próximos pasos
 
 - [ ] Agregar autenticación con JWT
 - [ ] Implementar base de datos (PostgreSQL)
 - [ ] Crear modelos de datos más complejos
 - [ ] Escribir tests (pytest para backend, Vitest para frontend)
-- [ ] Implementar CI/CD con GitHub Actions
 - [ ] Configurar monitoring y logging
 - [ ] Documentar APIs con OpenAPI/Swagger
 
