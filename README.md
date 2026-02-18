@@ -1,4 +1,4 @@
-# Proyecto Didáctico: Despliegue en Vercel y Render (Frontend + Backend)
+# Despliegue en Vercel y Render (Frontend + Backend)
 
 Este repositorio es una guía práctica para aprender a estructurar, dockerizar y desplegar una aplicación web siguiendo los principios de **CI/CD** con **GitHub Actions**, **Vercel** y **Render**.
 
