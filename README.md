@@ -1,26 +1,24 @@
-# Despliegue en Vercel y Render (Frontend + Backend)
+# Despliegue en Vercel, Render y Railway
 
-Este repositorio es una guía práctica para aprender a estructurar, dockerizar y desplegar una aplicación web siguiendo los principios de **CI/CD** con **GitHub Actions**, **Vercel** y **Render**.
+Este repositorio es una guía práctica para aprender a estructurar, dockerizar y desplegar una aplicación web siguiendo los principios de **CI/CD** con **GitHub Actions**, **Vercel**, **Render** y **Railway**.
 
-Este proyecto utiliza:
+Para el  **entorno de desarrollo local**, utilizaremos **Docker Compose** para levantar el frontend (Vue 3), el backend (FastAPI) y la base de datos en contenedores separados, emulando el entorno de producción.
 
-- **Frontend:** Vue 3 + Vite + Tailwind CSS
-- **Backend:** FastAPI (Python)
-- **Desarrollo:** Docker Compose
-- **Despliegue:** GitHub Actions + Render + Vercel
+Para el **despliegue en producción**, utilizaremos una plataforma especializada para cada servicio: **Vercel** para el frontend (Vue 3), **Render** para el backend (FastAPI) y **Railway** para la base de datos MySQL.
 
-## ¿Qué son Vercel y Render?
+A modo de resumen, esta serían las tecnologías utilizadas:
 
-[Vercel](https://vercel.com) es una plataforma de despliegue para frontend optimizada para Vue, React, Next.js, etc. Ofrece despliegue automático, CDN global y baja latencia.
-
-[Render](https://render.com) es una plataforma de despliegue para backend, APIs y bases de datos. Maneja automáticamente SSL, escalado e infraestructura.
-
-En este proyecto usaremos **Vercel** para el despliegue del frontend (Vue 3) y **Render** para el despliegue del backend (FastAPI).
+- **Frontend:** Vue 3 + Vite + Tailwind CSS.
+- **Backend:** FastAPI (Python).
+- **Base de Datos:** MySQL.
+- **Desarrollo:** Docker Compose.
+- **Despliegue:** GitHub Actions + Render + Vercel + Railway.
 
 <!-- --- -->
 
 ## Índice
 
+0. [Introducción](#introducción)
 1. [Estructura del Proyecto](#1-estructura-del-proyecto)
 2. [Desarrollo local con Docker](#2-desarrollo-local-con-docker)
 3. [Estructura del Frontend](#3-estructura-del-frontend)
@@ -36,9 +34,26 @@ En este proyecto usaremos **Vercel** para el despliegue del frontend (Vue 3) y *
 
 <!-- --- -->
 
+## 0. Introducción
+
+### ¿Qué es Vercel?
+
+[Vercel](https://vercel.com) es una plataforma de despliegue para frontend optimizada para Vue, React, Next.js, etc. Ofrece despliegue automático, CDN global y baja latencia.
+
+### ¿Qué es Render?
+
+[Render](https://render.com) es una plataforma de despliegue para backend, APIs y bases de datos. Maneja automáticamente SSL, escalado e infraestructura.
+
+### ¿Qué es Railway?
+
+[Railway](https://railway.com) es una plataforma de despliegue para bases de datos y servicios backend. Es ideal para gestionar bases de datos MySQL, PostgreSQL, etc.
+
+
+<!-- --- -->
+
 ## 1. Estructura del Proyecto
 
-El repositorio está organizado siguiendo el patrón de monorepositorio sencillo, donde cada servicio tiene su propia responsabilidad y configuración:
+El repositorio está organizado siguiendo el **patrón de monorepositorio sencillo**, donde cada servicio tiene su propia responsabilidad y configuración:
 
 ```text
 .
@@ -60,6 +75,7 @@ El repositorio está organizado siguiendo el patrón de monorepositorio sencillo
 ├── .github/workflows/      # Automatización (CI/CD)
 │   ├── deploy-backend.yaml # Despliegue automático a Render
 │   └── deploy-frontend.yaml# Despliegue automático a Vercel
+├── .env.example            # Variables de entorno de ejemplo
 ├── compose.yaml            # Orquestación para desarrollo local
 └── README.md               # Esta documentación
 ```
@@ -68,20 +84,24 @@ El repositorio está organizado siguiendo el patrón de monorepositorio sencillo
 
 ## 2. Desarrollo local con Docker
 
-Para asegurar que todos los desarrolladores trabajen en el mismo entorno, utilizamos **Docker Compose**. Esto emula cómo funcionará la aplicación en producción.
+Para asegurar que todos los desarrolladores trabajen en el mismo entorno, utilizamos **Docker Compose**. Esto nos permite emular cómo funcionará la aplicación en producción.
 
 ### Requisitos:
 
-- Docker y Docker Compose instalados.
+- Docker y Docker Compose instalados en la máquina de desarrollo.
 
 ### Pasos:
 
 1. Clona el repositorio.
-2. Desde la raíz, levanta ambos servicios:
+2. Crea tu archivo de entorno local:
+   ```bash
+   cp .env.example .env
+   ```
+3. Desde la raíz, levanta los servicios:
    ```bash
    docker compose up --build
    ```
-3. Accede a las aplicaciones:
+4. Accede a las aplicaciones:
    - **Frontend:** [http://localhost:3000](http://localhost:3000)
    - **Backend API:** [http://localhost:8000](http://localhost:8000)
    - **Documentación Interactiva (Swagger):** [http://localhost:8000/docs](http://localhost:8000/docs)
@@ -104,7 +124,7 @@ import { apiService } from './services/api'
 
 // En el componente
 onMounted(async () => {
-  const data = await apiService.getData()
+   const data = await apiService.listItems()
   // Usar los datos
 })
 ```
@@ -126,7 +146,11 @@ VITE_API_URL=https://tu-api.onrender.com
 ### Endpoints disponibles:
 
 - **GET /** - Estado del backend
-- **GET /api/data** - Lista de módulos del proyecto
+- **GET /api/data** - Estado general y datos de ejemplo
+- **GET /api/items** - Listar tareas
+- **POST /api/items** - Crear tarea
+- **PUT /api/items/{id}** - Actualizar tarea
+- **DELETE /api/items/{id}** - Eliminar tarea
 - **GET /docs** - Documentación interactiva (Swagger)
 
 ### CORS configurado:
@@ -186,6 +210,16 @@ El objetivo es que cada vez que hagas un `git push` a la rama `main`, la aplicac
 - En GitHub, ve a **Actions** después de hacer push.
 - Verás los workflows ejecutándose y llamando al Deploy Hook de Render.
 - En Render Dashboard, verás nuevos despliegues iniciándose automáticamente.
+
+**Base de Datos MySQL en Producción (Railway):**
+
+- Crea una base de datos MySQL en Railway.
+- Copia la cadena de conexión (Railway te la provee).
+- En Render > tu servicio backend > **Environment Variables**, agrega:
+   - **Name:** `DATABASE_URL`
+   - **Value:** `mysql+pymysql://user:password@host:port/database`
+
+Con `DATABASE_URL` definido, el backend usará esa base de datos en producción. En local, seguirá usando las variables `DB_*` de `compose.yaml`.
 
 <!-- --- -->
 
@@ -262,6 +296,8 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"])
 
 - **Frontend:** `VITE_API_URL` indica dónde está el backend
 - **Backend:** `PORT` indica en qué puerto escuchar
+- **Base de datos (local):** `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`
+- **Base de datos (producción):** `DATABASE_URL`
 
 Nunca incluyas estas en el código, usa siempre archivos `.env` (no versionados).
 
@@ -283,7 +319,7 @@ Nunca subas contraseñas, tokens o claves al repositorio. Usa siempre:
 | **Backend** | FastAPI | Última |
 | **Python** | Python | 3.11+ |
 | **Servidor Docker** | Node.js | 20-slim |
-| **Base de Datos** | - | (Puede agregarse) |
+| **Base de Datos** | MySQL | 8.x |
 
 <!-- --- -->
 

@@ -35,7 +35,7 @@
           </div>
           <div class="bg-blue-50 rounded-lg p-4">
             <p class="text-sm text-blue-700 font-semibold">Engine</p>
-            <p class="text-lg text-blue-900">{{ backendData.backend_engine }}</p>
+            <p class="text-lg text-blue-900">{{ backendEngine }}</p>
           </div>
           <div class="col-span-2 bg-indigo-50 rounded-lg p-4">
             <p class="text-sm text-indigo-700 font-semibold">Message</p>
@@ -44,59 +44,115 @@
         </div>
       </div>
 
-      <!-- Data from Backend Section -->
+      <!-- Todo List Section -->
       <div class="bg-white rounded-lg shadow-xl p-8 mb-8">
-        <h2 class="text-3xl font-bold text-gray-900 mb-6">Módulos del Proyecto</h2>
-        <div v-if="backendData.items && backendData.items.length > 0" class="space-y-4">
-          <div
-            v-for="item in backendData.items"
-            :key="item.id"
-            class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-indigo-300 transition"
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-3xl font-bold text-gray-900">Todo List</h2>
+          <button
+            @click="loadItems"
+            class="text-indigo-600 hover:text-indigo-800 font-semibold"
           >
-            <div class="flex items-center space-x-4">
-              <span class="text-2xl font-bold text-indigo-600">{{ item.id }}</span>
-              <div>
+            Refresh
+          </button>
+        </div>
+
+        <form @submit.prevent="addItem" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <input
+            v-model="newItemName"
+            type="text"
+            placeholder="Nueva tarea"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            required
+          />
+          <select
+            v-model="newItemStatus"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          >
+            <option>Pendiente</option>
+            <option>En progreso</option>
+            <option>Completado</option>
+          </select>
+          <button
+            type="submit"
+            class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition duration-200"
+          >
+            Agregar
+          </button>
+        </form>
+
+        <div v-if="items.length === 0" class="text-gray-600">
+          No hay tareas todavía.
+        </div>
+
+        <div v-else class="space-y-4">
+          <div
+            v-for="item in items"
+            :key="item.id"
+            class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 border border-gray-200 rounded-lg hover:border-indigo-300 transition"
+          >
+            <div class="flex-1">
+              <div v-if="editingId === item.id" class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <input
+                  v-model="editName"
+                  type="text"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                />
+                <select
+                  v-model="editStatus"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                >
+                  <option>Pendiente</option>
+                  <option>En progreso</option>
+                  <option>Completado</option>
+                </select>
+              </div>
+              <div v-else>
                 <p class="font-semibold text-gray-900">{{ item.name }}</p>
+                <span
+                  :class="{
+                    'px-3 py-1 rounded-full text-sm font-medium inline-block mt-2': true,
+                    'bg-green-100 text-green-800': item.status === 'Completado',
+                    'bg-blue-100 text-blue-800': item.status === 'En progreso',
+                    'bg-yellow-100 text-yellow-800': item.status === 'Pendiente'
+                  }"
+                >
+                  {{ item.status }}
+                </span>
               </div>
             </div>
-            <span
-              :class="{
-                'px-3 py-1 rounded-full text-sm font-medium': true,
-                'bg-green-100 text-green-800': item.status === 'Completado',
-                'bg-blue-100 text-blue-800': item.status === 'En progreso',
-                'bg-yellow-100 text-yellow-800': item.status === 'Pendiente'
-              }"
-            >
-              {{ item.status }}
-            </span>
+
+            <div class="flex items-center gap-2">
+              <template v-if="editingId === item.id">
+                <button
+                  @click="saveEdit(item.id)"
+                  class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200"
+                >
+                  Guardar
+                </button>
+                <button
+                  @click="cancelEdit"
+                  class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-200"
+                >
+                  Cancelar
+                </button>
+              </template>
+              <template v-else>
+                <button
+                  @click="startEdit(item)"
+                  class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200"
+                >
+                  Editar
+                </button>
+                <button
+                  @click="removeItem(item.id)"
+                  class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200"
+                >
+                  Eliminar
+                </button>
+              </template>
+            </div>
           </div>
         </div>
-      </div>
-
-      <!-- Interactive Section -->
-      <div class="bg-white rounded-lg shadow-xl p-8">
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">Interacción</h2>
-        
-        <div class="mb-8">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Enter your name:</label>
-          <input
-            v-model="name"
-            type="text"
-            placeholder="Your name here"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-          />
-        </div>
-
-        <div v-if="name" class="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mb-8">
-          <p class="text-indigo-900">Hello, <strong>{{ name }}</strong>! Welcome to Vue.js with Tailwind CSS.</p>
-        </div>
-
-        <button
-          @click="count++"
-          class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition duration-200"
-        >
-          Click Count: {{ count }}
-        </button>
       </div>
     </main>
   </div>
@@ -106,12 +162,58 @@
 import { ref, onMounted } from 'vue'
 import { apiService } from './services/api'
 
-const count = ref(0)
-const name = ref('')
 const loading = ref(true)
 const error = ref<string | null>(null)
 const backendStatus = ref<any>(null)
-const backendData = ref<any>({ items: [] })
+const backendEngine = ref('FastAPI + MySQL')
+const items = ref<Array<{ id: number; name: string; status: string }>>([])
+const newItemName = ref('')
+const newItemStatus = ref('Pendiente')
+const editingId = ref<number | null>(null)
+const editName = ref('')
+const editStatus = ref('Pendiente')
+
+const loadItems = async () => {
+  const data = await apiService.listItems()
+  items.value = data
+}
+
+const addItem = async () => {
+  if (!newItemName.value.trim()) return
+  await apiService.createItem({
+    name: newItemName.value.trim(),
+    status: newItemStatus.value,
+  })
+  newItemName.value = ''
+  newItemStatus.value = 'Pendiente'
+  await loadItems()
+}
+
+const startEdit = (item: { id: number; name: string; status: string }) => {
+  editingId.value = item.id
+  editName.value = item.name
+  editStatus.value = item.status
+}
+
+const cancelEdit = () => {
+  editingId.value = null
+  editName.value = ''
+  editStatus.value = 'Pendiente'
+}
+
+const saveEdit = async (itemId: number) => {
+  await apiService.updateItem(itemId, {
+    name: editName.value.trim(),
+    status: editStatus.value,
+  })
+  cancelEdit()
+  await loadItems()
+}
+
+const removeItem = async (itemId: number) => {
+  await apiService.deleteItem(itemId)
+  await loadItems()
+}
 
 onMounted(async () => {
   try {
@@ -121,7 +223,8 @@ onMounted(async () => {
       apiService.getData(),
     ])
     backendStatus.value = status
-    backendData.value = data
+    backendEngine.value = data.backend_engine || 'FastAPI + MySQL'
+    await loadItems()
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Error fetching data from backend'
     console.error('Error:', err)
