@@ -9,7 +9,7 @@
           <div class="flex items-center space-x-4">
             <div v-if="backendStatus" class="flex items-center space-x-2">
               <span class="w-3 h-3 bg-green-500 rounded-full"></span>
-              <span class="text-sm text-gray-600">Backend Online</span>
+              <span class="text-sm text-gray-600">Backend Online.</span>
             </div>
             <div v-else class="flex items-center space-x-2">
               <span class="w-3 h-3 bg-red-500 rounded-full"></span>
