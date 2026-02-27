@@ -1,11 +1,11 @@
-# 🚀 Entrega de Práctica Final: Despliegue CI/CD
+# Entrega de Práctica Final: Despliegue CI/CD
 
 **Nombre:** Juan Francisco Perez Bautista  
 **Repositorio GitHub:** [https://github.com/jperbau050/vercel-render-railway.git](https://github.com/jperbau050/vercel-render-railway.git)
 
 ---
 
-## 🔗 Enlaces del Proyecto en Producción
+## Enlaces del Proyecto en Producción
 
 * **Frontend (Vercel):** [https://vercel-render-railway-psi.vercel.app](https://vercel-render-railway-psi.vercel.app)
 * **Backend API (Render):** [https://vercel-render-railway.onrender.com/docs](https://vercel-render-railway.onrender.com/docs)
@@ -13,7 +13,7 @@
 
 ---
 
-## 📋 Guía de Pasos Realizados
+## Guía de Pasos Realizados
 
 Para llegar al estado actual de la aplicación, se completaron los siguientes hitos técnicos:
 
